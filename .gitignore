@@ -1,0 +1,19 @@
+# Ignore datasets and results
+.venv
+data/
+results/
+models/
+bin/
+etc/
+notebooks/
+*.parquet
+*.csv
+*.npy
+
+# Python/IDE stuff
+__pycache__/
+*.pyc
+*.pyo
+.env
+.venv/
+.ipynb_checkpoints/

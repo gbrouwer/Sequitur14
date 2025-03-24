@@ -1,0 +1,58 @@
+# Generation X - Conversation 3
+
+## Summary:
+This conversation focused on refining preprocessing and keyword extraction for an AI trend detection pipeline, with specific emphasis on stopword filtering.
+
+---
+
+## Key Milestones:
+
+### 🔹 Project Summary
+- Reviewed the current architecture: data scraping, TF-IDF, LDA, and BERTopic analysis on ArXiv AI papers.
+- Identified preprocessing and stopword filtering as key improvement areas before trend detection.
+
+---
+
+### 🔹 Preprocessing Improvements
+- Added apostrophe normalization and contraction expansion to `ArxivPreprocessor`.
+- Made contraction expansion configurable via `expand_contractions` (default=True).
+- Passed flag through `run_preprocessing.py` and `main.py`.
+
+---
+
+### 🔹 Multi-file Coding Convention
+- Adopted a file-aware header style:
+  ```
+  # === FILE: filename.py ===
+  # === CHANGE: description of change ===
+  ```
+
+---
+
+### 🔹 General Stopword List
+- Created `stopwords_general_english_top_1000.txt`
+  - Merged from NLTK, spaCy, and Scikit-learn.
+  - 406 alphabetically sorted entries.
+
+---
+
+### 🔹 Scientific Stopword List
+- Discussed use of Academic Word List (AWL).
+- Generated:
+  - `stopwords_scientific_english_top_1000.txt` (partial AWL subset)
+  - `stopwords_scientific_english_awl_full.txt` (full AWL, 555 entries)
+
+---
+
+### 🔹 Next Steps (Deferred)
+- Merge general + AWL stopwords.
+- Run TF-IDF on filtered corpus.
+- Begin trend detection on high-value, domain-specific terms.
+
+---
+
+### ✅ Pause Point
+User will:
+- Integrate changes locally,
+- Fetch a larger ArXiv sample,
+- Return for trend modeling.
