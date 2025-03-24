@@ -1,51 +1,59 @@
 # === FILE: main.py ===
-# === PURPOSE: Run full end-to-end pipeline with monthly scraping for MVP ===
 
-from scraper import scrape_arxiv
-from stager import stage_arxiv_data
-from preprocess import preprocess_from_staging
-from tfidf import run_tfidf_timesliced
-from lda import run_lda_timesliced
-from bert import run_bert_timesliced
+from document_scraper import scrape_arxiv
+from document_stager import stage_arxiv_data
+from preprocess_documents import preprocess_from_staging
+from run_tfidf_trend_analysis import run_tfidf_timesliced
+from run_lda_trend_analysis import run_lda_timesliced
+from run_bert_trend_analysis import run_bert_timesliced
 from sequitur14.managers import JobManager
+from extract_trend_topics import extract_trend_topics
+from extract_trend_positions import extract_topic_positions
 
 config = {
     "job_name": "arxiv-ai-mvp-monthly",
     "data_name": "arxiv-cs-ai-2005-2023-monthly",
     "data_source": "arxiv",
     "category": "cs.AI",
-    "start_year": 2000,
-    "end_year": 2025,
+    "start_year": 2020,
+    "end_year": 2021,
     "max_results_per_month": 250,
     "expand_contractions": True,
     "sampling_freq": "monthly",
-    "embedding_model": "../models/all-MiniLM-L6-v2"
+    "tfidf_max_features": 500,
+    "remove_top_n_stopwords": "all",
+    "stopword_source": "../meta/stopwords_general_and_scientific_english.txt",
+    "embedding_model": "../models/all-MiniLM-L6-v2",
+    "device": "cpu"
 }
 
-# ---- Step 0: Scrape ArXiv Data ----
+# Step 0: Scrape
 scrape_arxiv(config)
 
-# ---- Step 1: Stage Scraped Data ----
+# Step 1: Stage
 stage_arxiv_data(config)
 
-# ---- Step 2: Preprocessing Text ----
-print("\n=== Step 2: Preprocessing Text ===")
+# Step 2: Preprocess
 preprocess_from_staging(config)
 
-# ---- Step 2.5: Save Preprocessing Config (needed for downstream JobManager) ----
-print("\n=== Step 2.5: Saving Preprocessing Config ===")
+# Step 2.5: Save config
 JobManager(config, mode="preprocess")
 
-# ---- Step 3: Time-Sliced TF-IDF Analysis ----
-print("\n=== Step 3: Time-Sliced TF-IDF Analysis ===")
+# Step 3: TF-IDF
 run_tfidf_timesliced(config)
 
-# ---- Step 4: LDA Topic Modeling ----
-print("\n=== Step 4: LDA Topic Modeling ===")
+# Step 4: LDA
 run_lda_timesliced(config)
 
-# ---- Step 5: Time-Sliced BERTopic Clustering ----
-print("\n=== Step 5: Time-Sliced BERTopic Clustering ===")
+# Step 5: BERTopic
 run_bert_timesliced(config)
 
-print("\n✓ MVP pipeline complete. All analyses finished.")
+# Step 6: Extract LLM Trend Data
+print("\n=== Step 6: Extracting LLM Trend Topics ===")
+extract_trend_topics()
+
+# Step 7: Extract UMAP 2D Topic Positions
+print("\n=== Step 7: Extracting Topic Positions in 2D ===")
+extract_topic_positions()
+
+print("\n🎉 All steps complete. Results saved to /results")
