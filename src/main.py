@@ -1,11 +1,11 @@
 # === FILE: main.py ===
 
-from document_scraper import scrape_arxiv
-from document_stager import stage_arxiv_data
+from scraper import scrape_arxiv
+from stager import stage_arxiv_data
 from preprocess_documents import preprocess_from_staging
-from run_tfidf_trend_analysis import run_tfidf_timesliced
-from run_lda_trend_analysis import run_lda_timesliced
-from run_bert_trend_analysis import run_bert_timesliced
+from tfidf import run_tfidf_timesliced
+from lda import run_lda_timesliced
+from bert_ import run_bert_timesliced
 from sequitur14.managers import JobManager
 from extract_trend_topics import extract_trend_topics
 from extract_trend_positions import extract_topic_positions
