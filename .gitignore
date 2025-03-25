@@ -4,6 +4,7 @@ data/
 results/
 bin/
 etc/
+models/
 notebooks/
 *.parquet
 *.csv
