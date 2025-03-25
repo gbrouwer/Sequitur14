@@ -1,0 +1,17 @@
+bertopic==0.17.0
+feedparser==6.0.11
+Flask==3.1.0
+gensim==4.3.3
+Markdown==3.7
+numpy==2.2.4
+openai==1.68.2
+pandas==1.5.3
+python-dotenv==1.1.0
+PyYAML==6.0.2
+PyYAML==6.0.2
+scikit_learn==1.6.1
+sentence_transformers==3.4.1
+torch==2.6.0+cu126
+tqdm==4.67.1
+tts==0.22.0
+umap_learn==0.5.7

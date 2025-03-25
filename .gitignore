@@ -4,11 +4,17 @@ data/
 results/
 bin/
 etc/
+audio/
+node_modules/
+viz/
 models/
 notebooks/
+backuo/
+fonts/
 *.parquet
 *.csv
 *.npy
+src/trend_query_with_key.py
 
 # Python/IDE stuff
 __pycache__/

@@ -1,0 +1,17 @@
+You are a helpful assistant.
+
+I want you to:
+1. Generate a one-paragraph summary on the topic of "{topic}" meant for a general audience.
+2. Generate a one-paragraph summary on the topic of "{topic}" meant for people with a background in AI, CS, Machine Learning, or Data Science.
+3. List a few internet resources to learn more.
+4. Based on the supplementary info I am giving you about the city of Amsterdam, think of ways "{topic}" can be used to work towards the goals of the city government of Amsterdam, or reasons why awareness about "{topic}" at the city government can help the city with the same goals, and/or assess the risks that "{topic}" might pose for it.
+
+Make the output well-formatted:
+- Include a clear, relevant title.
+- Use headers and subheaders to organize each section.
+- Use bullet points or numbered lists where appropriate.
+- Ensure the response is easy to read and well-structured.
+- Write the response in Dutch, but leave technical terms in English
+
+Supplementary Info (about the city of Amsterdam):
+{supplementary_info}

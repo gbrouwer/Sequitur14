@@ -1,24 +1,24 @@
-# === FILE: stagers.py ===
+# === FILE: stager.py ===
 # === PURPOSE: Stage raw scraped arXiv data into structured yearly Parquet files ===
 
 import pandas as pd
 import hashlib
 from pathlib import Path
 from tqdm import tqdm
+from sequitur14.managers import JobManager
+
 
 def stage_arxiv_data(config):
-    """
-    Converts raw CSVs from scraping into structured annual Parquet files.
-    Output is stored in ../data/<data_name>/staging
-    """
-    raw_dir = Path("../data") / config["data_name"] / "raw"
-    staging_dir = Path("../data") / config["data_name"] / "staging"
-    staging_dir.mkdir(parents=True, exist_ok=True)
+    job = JobManager(config, mode="stage")
+    raw_dir = job.get_data_path("raw")
+    staging_dir = job.get_data_path("staging")
 
     grouped = {}
     print(f"📂 Loading raw files from: {raw_dir}")
 
-    for file in tqdm(sorted(raw_dir.glob("raw_*.csv"))):
+    raw_files = sorted(raw_dir.glob("raw_*.csv"))
+
+    for file in tqdm(raw_files, desc="Staging raw files"):
         df = pd.read_csv(file)
 
         # Standardize column names
@@ -41,12 +41,13 @@ def stage_arxiv_data(config):
                 grouped[year] = []
             grouped[year].append(df_group)
 
-    # Save each year's data as a single Parquet file
-    for year, parts in grouped.items():
+    for year, parts in tqdm(grouped.items(), desc="Saving yearly Parquet files"):
         full_df = pd.concat(parts, ignore_index=True)
         outpath = staging_dir / f"arxiv_{year}.parquet"
         full_df.to_parquet(outpath, index=False)
-        print(f"✓ Staged {len(full_df)} records for year {year}")
+
+    job.update_status("staged")
+
 
 def _hash_row(row):
     raw_string = '|'.join(str(row[col]) for col in row.index)

@@ -1,5 +1,6 @@
-# Sequitur14: AI Research Trend Detection Pipeline
 
+
+# Sequitur14: AI Research Trend Detection Pipeline
 Sequitur14 is a modular pipeline designed to detect emerging trends in AI research using arXiv data. It scrapes, preprocesses, and analyzes time-sliced scientific papers using TF-IDF, LDA, and BERTopic, with follow-up trend and topic visualization tools.
 
 ---
@@ -11,6 +12,18 @@ git clone https://github.com/yourusername/sequitur14.git
 cd sequitur14
 pip install -r requirements.txt
 ```
+
+## Setup
+
+Install dependencies: pip install -r requirements.txt
+
+You’ll also need:
+
+Node.js + Puppeteer (npm install puppeteer)
+
+FFmpeg (for GIF exports)
+
+UMAP + SentenceTransformers via pip
 
 ---
 
@@ -134,10 +147,10 @@ The run_lda.py module applies LDA topic modeling to a corpus of preprocessed arX
 ### `bert.py`
 Executes BERTopic clustering per time slice using transformer embeddings.
 
-What is BERT?
+#### What is BERT?
 Before diving into the components, it's useful to understand that BERT (Bidirectional Encoder Representations from Transformers) is a pre-trained transformer model that maps input text into dense, high-dimensional vectors (embeddings). These embeddings capture rich semantic relationships between words and phrases based on their context — making them ideal for clustering, similarity comparison, and other downstream NLP tasks.
 
-BERT Embedder Module
+#### BERT Embedder Module
 What It Does
 The Embedder module (BertEmbedder) is responsible for converting each cleaned arXiv document into a fixed-length numerical vector (embedding) using a transformer-based model like BERT or Sentence-BERT. Each document is tokenized and passed through the model, and the resulting embeddings capture the document's overall meaning and structure in a high-dimensional space.
 
@@ -155,7 +168,7 @@ Where:
 - e_d: embedding vector for document d (typically 384–768 dimensions)
 - BERT: pre-trained transformer model (e.g., all-MiniLM, SciBERT)
 
-BERTopic Clusterer Module
+#### BERTopic Clusterer Module
 What It Does
 The BERTopic Clusterer (BertClusterer) takes the document embeddings produced by the embedder and applies dimensionality reduction (typically with UMAP) followed by clustering (e.g., HDBSCAN). It then uses c-TF-IDF (class-based TF-IDF) to extract representative keywords for each cluster, effectively turning them into interpretable topics.
 
@@ -186,8 +199,22 @@ doc_topics.csv: topic assignment per document
 ### `extract_trend_topics.py`
 Scans BERTopic output to track LLM-related topic emergence. Saves to `trend_summary_llm_vs_baseline.csv`.
 
+What Topic Trend Detection Means
+Tracking how topics appear and evolve over time is a key technique in identifying emerging trends in a research field. Some topics—such as those related to “LLMs” or “transformers”—may emerge suddenly and grow rapidly, signaling a paradigm shift. Others remain stable across many time periods and serve as a baseline for comparison. Analyzing these patterns lets us measure topical momentum, sudden spikes, or gradual decline.
+
+What extract_trend_topics.py Does
+The extract_trend_topics.py script processes BERTopic outputs to identify and contrast LLM-related topics with baseline (stable) topics over time. It scans topics_*.csv and doc_topics_*.csv files for each time slice, tags topics containing LLM-related keywords (e.g., “transformer”, “gpt”, “language model”), and tracks how frequently each topic appears across slices. Topics that persist in at least 60% of slices are classified as “baseline,” excluding any that overlap with LLM topics. The result is a CSV summary (trend_summary_llm_vs_baseline.csv) with document counts per topic per month, labeled by type. This output is designed to feed directly into visual dashboards or time-series plots.
+
 ### `extract_topic_positions.py`
 Pulls UMAP 2D topic coordinates from BERTopic results. Saves to `topic_positions_2D.csv`.
+
+What Topic Position Extraction Means
+When working with topic modeling — especially using BERT-based approaches like BERTopic — topics can be represented not just as word distributions, but as positions in a 2D space. These positions typically come from projecting high-dimensional document embeddings or topic centroids into a 2D space using algorithms like UMAP. Visualizing how these topic positions shift over time allows researchers to track semantic evolution, emergence of new ideas, or convergence/divergence between related fields.
+
+What extract_topic_positions.py Does
+The extract_topic_positions.py script scans a directory containing topics_<timestamp>.csv files — each representing BERT-derived topics for a particular time slice. It reads each file, extracts the topic IDs, labels, UMAP-based x/y coordinates, and associated timestamps, and combines them into a single output file (topic_positions_2D.csv). This consolidated file enables longitudinal visualizations, such as animated movement of topics or clustering of emerging themes over time. The script assumes that UMAP coordinates (x, y) are already present in each input file and parses timestamps directly from filenames.
+
+
 
 ---
 
