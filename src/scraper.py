@@ -13,8 +13,8 @@ def scrape_arxiv(config):
     category = config["category"]
     start_year = config["start_year"]
     end_year = config["end_year"]
-    max_results = config.get("max_results_per_month", 100)
-    sampling_freq = config.get("sampling_freq", "monthly")
+    max_results = config.get("max_results_per_interval")
+    sampling_freq = config.get("sampling_freq")
     raw_dir = Path("../data") / config["data_name"] / "raw"
     raw_dir.mkdir(parents=True, exist_ok=True)
 
@@ -26,9 +26,8 @@ def scrape_arxiv(config):
             print(f"✅ Skipping {filename} (already exists)")
             continue
 
-        print(f"⏳ Querying {start.date()} to {end.date()}...")
         entries = _scrape_range(base_url, category, start, end, max_results)
-
+        print(f"Retrieved {len(entries)} results from {start.date()} to {end.date()}")
         if entries:
             _save_entries(entries, filepath)
         else:
