@@ -4,7 +4,7 @@ Sequitur14 is a modular pipeline designed to detect emerging trends in AI resear
 
 ---
 
-## 📦 Installation
+## Installation
 
 ```bash
 git clone https://github.com/yourusername/sequitur14.git
@@ -14,7 +14,7 @@ pip install -r requirements.txt
 
 ---
 
-## 🚀 Usage
+## Usage
 
 ```bash
 python main.py
@@ -29,7 +29,7 @@ The pipeline will:
 
 ---
 
-## 🗂️ Project Structure
+## Project Structure
 
 ```
 Sequitur14/
@@ -57,7 +57,7 @@ Sequitur14/
 
 ---
 
-## 📄 Script Descriptions
+## Script Descriptions
 
 ### `main.py`
 Runs the full pipeline end-to-end. Inputs a config dict, outputs all intermediate and final results to `data/` and `results/`.
@@ -131,9 +131,57 @@ Where:
 
 The run_lda.py module applies LDA topic modeling to a corpus of preprocessed arXiv documents to identify common thematic structures across the dataset. It allows you to specify the number of topics and the maximum number of features (words) to include in the model. Once the LDA model is trained, the module outputs two key results: a topic-word matrix (showing the most relevant words for each topic) and a document-topic matrix (indicating the topic distribution for each document). These outputs are saved to disk in CSV format and can be used for visualizations, labeling, or downstream trend detection. There is also a run_lda_timesliced.py version that runs this analysis separately on each time slice (e.g., monthly) to support topic evolution analysis over time.
 
-
 ### `bert.py`
 Executes BERTopic clustering per time slice using transformer embeddings.
+
+What is BERT?
+Before diving into the components, it's useful to understand that BERT (Bidirectional Encoder Representations from Transformers) is a pre-trained transformer model that maps input text into dense, high-dimensional vectors (embeddings). These embeddings capture rich semantic relationships between words and phrases based on their context — making them ideal for clustering, similarity comparison, and other downstream NLP tasks.
+
+BERT Embedder Module
+What It Does
+The Embedder module (BertEmbedder) is responsible for converting each cleaned arXiv document into a fixed-length numerical vector (embedding) using a transformer-based model like BERT or Sentence-BERT. Each document is tokenized and passed through the model, and the resulting embeddings capture the document's overall meaning and structure in a high-dimensional space.
+
+This embedding process is essential for modern NLP pipelines, as it allows textual documents to be compared, clustered, or visualized based on their semantic similarity rather than just word overlap.
+
+Output
+A NumPy array of document embeddings (embeddings.npy)
+Optionally cached per time slice
+
+Each document d is transformed into a dense vector:
+
+    e_d = BERT(d)
+
+Where:
+- e_d: embedding vector for document d (typically 384–768 dimensions)
+- BERT: pre-trained transformer model (e.g., all-MiniLM, SciBERT)
+
+BERTopic Clusterer Module
+What It Does
+The BERTopic Clusterer (BertClusterer) takes the document embeddings produced by the embedder and applies dimensionality reduction (typically with UMAP) followed by clustering (e.g., HDBSCAN). It then uses c-TF-IDF (class-based TF-IDF) to extract representative keywords for each cluster, effectively turning them into interpretable topics.
+
+This approach is more flexible than traditional topic models like LDA because it operates in semantic space and can adapt to the shape of the data. It's especially useful for discovering emerging or non-linear topic structures in research literature.
+
+BERTopic Workflow:
+
+1. Embed documents using BERT:
+     e_d = BERT(d)
+
+2. Reduce dimensionality:
+     u_d = UMAP(e_d)
+
+3. Cluster embeddings:
+     c_d = HDBSCAN(u_d)
+
+4. Extract keywords per cluster using c-TF-IDF
+
+Where:
+- e_d: high-dimensional BERT embedding
+- u_d: low-dimensional UMAP projection
+- c_d: cluster ID assigned to document d
+
+Output
+topics.csv: top words per topic (ranked by relevance)
+doc_topics.csv: topic assignment per document
 
 ### `extract_trend_topics.py`
 Scans BERTopic output to track LLM-related topic emergence. Saves to `trend_summary_llm_vs_baseline.csv`.
@@ -143,7 +191,7 @@ Pulls UMAP 2D topic coordinates from BERTopic results. Saves to `topic_positions
 
 ---
 
-## 🧠 Dependencies
+## Dependencies
 
 - pandas, numpy, nltk, contractions
 - scikit-learn, umap-learn
@@ -152,7 +200,7 @@ Pulls UMAP 2D topic coordinates from BERTopic results. Saves to `topic_positions
 
 ---
 
-## 📝 License
+## License
 
 MIT — built for rapid prototyping and research.
 
