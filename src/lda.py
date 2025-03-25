@@ -13,7 +13,7 @@ def run_lda_timesliced(config):
     Run LDA topic modeling on corpus grouped by time slices.
     Saves topic-word matrices and document-topic distributions per slice.
     """
-    job = JobManager(config=config, base_results_path="../results/lda", mode="analysis")
+    job = JobManager(config=config, mode="analysis")
     job.print_header()
 
     # Load cleaned corpus and metadata
@@ -33,8 +33,6 @@ def run_lda_timesliced(config):
 
     for ts, idxs in sorted(groups.items()):
         timestamp_str = ts.strftime("%Y-%m") if freq == "monthly" else ts.strftime("%Y-%m-%d")
-        print(f"\n🔍 Running LDA for {timestamp_str} ({len(idxs)} docs)")
-
         docs = [corpus[i] for i in idxs]
         analyzer = LdaAnalyzer(
             corpus=docs,
@@ -43,6 +41,7 @@ def run_lda_timesliced(config):
             stop_words=config.get("remove_top_n_stopwords"),
             stopword_path=config.get("stopword_source")
         )
+
         analyzer.fit()
 
         topic_words = analyzer.topics_df
@@ -54,4 +53,6 @@ def run_lda_timesliced(config):
         save_topics(topic_words, topics_path)
         save_document_topics(doc_topics, doc_topics_path)
 
+
+    print("✓ Done")
     print("\n✅ Time-sliced LDA analysis complete.")

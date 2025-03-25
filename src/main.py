@@ -5,10 +5,10 @@ from stager import stage_arxiv_data
 from preprocess_documents import preprocess_from_staging
 from tfidf import run_tfidf_timesliced
 from lda import run_lda_timesliced
-from bert_ import run_bert_timesliced
+from bert import run_bert_timesliced
 from sequitur14.managers import JobManager
 from extract_trend_topics import extract_trend_topics
-from extract_trend_positions import extract_topic_positions
+from extract_topic_positions import extract_topic_positions
 
 config = {
     "job_name": "arxiv-ai-mvp-monthly",
@@ -24,7 +24,8 @@ config = {
     "remove_top_n_stopwords": "all",
     "stopword_source": "../meta/stopwords_general_and_scientific_english.txt",
     "embedding_model": "../models/all-MiniLM-L6-v2",
-    "device": "cpu"
+    "device": "cpu",
+    "min_docs_per_slice": 15    
 }
 
 # Step 0: Scrape
@@ -37,7 +38,7 @@ stage_arxiv_data(config)
 preprocess_from_staging(config)
 
 # Step 2.5: Save config
-JobManager(config, mode="preprocess")
+JobManager(config, mode="preprocess", force=True)
 
 # Step 3: TF-IDF
 run_tfidf_timesliced(config)
@@ -49,7 +50,7 @@ run_lda_timesliced(config)
 run_bert_timesliced(config)
 
 # Step 6: Extract LLM Trend Data
-print("\n=== Step 6: Extracting LLM Trend Topics ===")
+print("\n=== Step 6: Extracting LLM Trending Topics ===")
 extract_trend_topics()
 
 # Step 7: Extract UMAP 2D Topic Positions

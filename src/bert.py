@@ -11,7 +11,7 @@ import numpy as np
 
 
 def run_bert_timesliced(config):
-    job = JobManager(config=config, base_results_path="../results/tfidf", mode="analysis")
+    job = JobManager(config=config, mode="analysis")
     job.print_header()
 
     # Load corpus and metadata
@@ -39,12 +39,15 @@ def run_bert_timesliced(config):
         n_topics=config.get("n_topics", "auto")
     )
 
+    min_docs = config.get("min_docs_per_slice", 15)
+
     for ts, idxs in sorted(groups.items()):
         timestamp_str = ts.strftime("%Y-%m") if freq == "monthly" else ts.strftime("%Y-%m-%d")
-        print(f"\n🔍 Running BERT clustering for {timestamp_str} ({len(idxs)} docs)")
+        print(f"\n🔍 Running BERT clustering for {timestamp_str} ({len(idxs)} docs)...", end=" ")
 
         docs = [corpus[i] for i in idxs]
-        if not docs:
+        if len(docs) < min_docs:
+            print(f"⚠️ Skipping slice (only {len(docs)} docs, need at least {min_docs}).")
             continue
 
         # Step 1: Embed
@@ -64,5 +67,7 @@ def run_bert_timesliced(config):
         if config.get("save_embeddings", False):
             emb_path = job.base_dir / f"embeddings_{timestamp_str}.npy"
             np.save(emb_path, embeddings)
+
+        print("✓ Done")
 
     print("\n✅ Time-sliced BERT clustering complete.")
