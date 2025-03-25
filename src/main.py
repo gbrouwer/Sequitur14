@@ -11,20 +11,20 @@ from extract_trend_topics import extract_trend_topics
 from extract_topic_positions import extract_topic_positions
 
 config = {
-    "job_name": "arxiv-ai-mvp-monthly",
-    "data_name": "arxiv-cs-ai-2005-2023-monthly",
+    "job_name": "arxiv-ai-mvp-weekly",
+    "data_name": "arxiv-cs-ai-2010-2025-weekly",
     "data_source": "arxiv",
     "category": "cs.AI",
-    "start_year": 2020,
-    "end_year": 2021,
-    "max_results_per_month": 250,
+    "start_year": 2010,
+    "end_year": 2025,
+    "max_results_per_interval": 250,
     "expand_contractions": True,
-    "sampling_freq": "monthly",
+    "sampling_freq": "weekly",
     "tfidf_max_features": 500,
     "remove_top_n_stopwords": "all",
     "stopword_source": "../meta/stopwords_general_and_scientific_english.txt",
     "embedding_model": "../models/all-MiniLM-L6-v2",
-    "device": "cpu",
+    "device": "gpu",
     "min_docs_per_slice": 15    
 }
 
