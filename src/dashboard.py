@@ -1,8 +1,3 @@
-# === FILE: dashboard.py ===
-# === PURPOSE: Replaces create_dashboard.py; outputs clean index.html and dashboard.js ===
-# === LOCATION: Should live in the same folder as main.py ===
-
-import json
 from pathlib import Path
 
 # Path to the visualization results directory (relative to main.py)

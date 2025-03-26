@@ -1,6 +1,3 @@
-# === FILE: analyzers.py ===
-# === CHANGE: Combine TfidfAnalyzer and LdaAnalyzer in one script, both fully documented ===
-
 import pandas as pd
 from pathlib import Path
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer

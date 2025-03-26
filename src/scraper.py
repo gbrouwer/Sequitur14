@@ -1,6 +1,3 @@
-# === FILE: scraper.py ===
-# === PURPOSE: Fetch documents from arXiv based on time intervals and category ===
-
 import feedparser
 import time
 from datetime import datetime, timedelta
@@ -54,14 +51,18 @@ def _scrape_range(base_url, category, start_date, end_date, max_results):
 def _save_entries(entries, path):
     records = []
     for entry in entries:
-        records.append({
-            "id": entry.get("id"),
-            "title": entry.get("title"),
-            "summary": entry.get("summary"),
-            "published": entry.get("published"),
-            "authors": ", ".join(author.name for author in entry.get("authors", [])),
-            "link": entry.get("link")
-        })
+        records.append(
+            {
+                "id": entry.get("id"),
+                "title": entry.get("title"),
+                "summary": entry.get("summary"),
+                "published": entry.get("published"),
+                "authors": ", ".join(
+                    author.name for author in entry.get("authors", [])
+                ),
+                "link": entry.get("link"),
+            }
+        )
     df = pd.DataFrame(records)
     df.to_csv(path, index=False)
 
@@ -71,13 +72,18 @@ def _generate_time_ranges(start_year, end_year, sampling_freq):
     end = datetime(end_year + 1, 1, 1)
 
     if sampling_freq == "monthly":
+
         def next_step(d):
             year, month = d.year + int(d.month == 12), (d.month % 12) + 1
             return datetime(year, month, 1)
+
     elif sampling_freq == "weekly":
+
         def next_step(d):
             return d + timedelta(weeks=1)
+
     else:
+
         def next_step(d):
             return d + timedelta(days=1)
 

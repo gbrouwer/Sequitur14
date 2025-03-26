@@ -66,18 +66,4 @@ print("[Step 5] LDA Analysis")
 print("[Step 6] BERTopic Analyis")
 run_bert_timesliced(config)
 
-# # Step 6: Extract LLM Trend Data
-# print("\n=== Step 6: Extracting LLM Trending Topics ===")
-# extract_trend_topics()
-
-# # Step 7: Extract UMAP 2D Topic Positions
-# print("\n=== Step 7: Extracting Topic Positions in 2D ===")
-# extract_topic_positions()
-
-# === Step 8: Export Results to Dashboard ===
-# from sequitur14.exporters import ResultsExporter
-#
-# exporter = ResultsExporter(config, config["data_name"])
-# exporter.run()
-#
-# print("\n🎉 All steps complete. Results saved to /results")
+# print("\All steps complete. Results saved to /results")

@@ -1,6 +1,3 @@
-# === FILE: managers.py ===
-# === PURPOSE: Manage experiment/job configuration and directory layout ===
-
 import hashlib
 import json
 import yaml
@@ -79,3 +76,17 @@ class JobManager:
         print(f"Job: {self.job_name} ({self.mode})")
         print(f"Data directory: {self.data_dir}")
         print(f"Results directory: {self.results_dir}")
+
+    def get_rolling_windows(self, metadata_df):
+        """
+        Create rolling time slices (e.g., by month or quarter) from metadata.
+
+        Returns:
+            List of tuples (timestamp_str, df_slice)
+        """
+        group_field = self.config.get("rolling_freq", "year_week")
+        slices = []
+        for label, group in metadata_df.groupby(group_field):
+            timestamp_str = str(label)
+            slices.append((timestamp_str, group))
+        return slices        

@@ -1,15 +1,11 @@
-# === FILE: bert.py ===
-# === PURPOSE: Run full + time-sliced BERT embedding + BERTopic clustering ===
-
 import pandas as pd
 from pathlib import Path
+from bertopic import BERTopic
 from sequitur14.managers import JobManager
 from sequitur14.embedders import BertEmbedder
 from sequitur14.clusterers import BertClusterer
-from sequitur14.exporters import ResultsExporter
 from utils import load_corpus
 from utils import load_metadata
-from datetime import datetime
 import json
 
 
@@ -47,10 +43,19 @@ def run_bert_timesliced(config):
         reduce=config.get("reduce", True),
         n_topics=config.get("n_topics", "auto")
     )
-    clusterer.fit(corpus, embeddings)
+
+    #model_path = Path("bert_model")
+    # clusterer.fit(corpus, embeddings)
+    # clusterer.topic_model.save(str(model_path))
+
+    # Load instead
+    # topic_model = BERTopic.load("bert_model")
+    clusterer.topic_model = BERTopic.load("C:/Core/Sequitur14/src/bert_model")
+    # clusterer.topic_model = BERTopic.load("C:\Core\Sequitur14\src\bert_model")
+    # clusterer.df_docs = clusterer.transform(docs, embeddings)
 
     out_dir = job.get_results_path("bert")
-    clusterer.df_docs.to_csv(out_dir / "doc_topics_full_corpus.csv", index=False)
+    # clusterer.df_docs.to_csv(out_dir / "doc_topics_full_corpus.csv", index=False)
 
     # Save full topic words
     topic_words = []
@@ -66,14 +71,18 @@ def run_bert_timesliced(config):
 
     # === Rolling window analysis ===
     print("\t[Step 2] Rolling BERTopic Inference:")
+
     combined_slices = []
+    
+    corpus_df = pd.read_parquet(job.get_data_path("corpus") / "corpus.parquet")
+    metadata = metadata.merge(corpus_df[["id", "text_raw"]], on="id", how="left")
     slices = job.get_rolling_windows(metadata)
 
     for timestamp_str, df_slice in slices:
-        docs = df_slice["title"] + " " + df_slice["summary"]
-        slice_embeddings = embedder.encode(docs.tolist())
-
-        df = clusterer.transform(docs.tolist(), slice_embeddings)
+        docs = df_slice["text_raw"]
+        texts = docs.dropna().astype(str).tolist()
+        slice_embeddings = embedder.encode(texts)
+        df = clusterer.transform(texts, slice_embeddings)
         df["timestamp"] = timestamp_str
         combined_slices.append(df)
 

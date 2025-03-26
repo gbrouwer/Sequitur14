@@ -1,6 +1,3 @@
-# === FILE: utils.py ===
-# === PURPOSE: Utility methods for corpus saving, loading, metadata, etc. ===
-
 import json
 from pathlib import Path
 import pandas as pd

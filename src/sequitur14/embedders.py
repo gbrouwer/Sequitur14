@@ -1,6 +1,3 @@
-# === FILE: embedders.py ===
-# === CHANGE: Add docstrings, inline comments, and config validation for BertEmbedder ===
-
 import numpy as np
 from sentence_transformers import SentenceTransformer
 from pathlib import Path
